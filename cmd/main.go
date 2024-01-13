@@ -3,9 +3,11 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/fatih/color"
@@ -21,6 +23,57 @@ const (
 	DEFAULT_LENGTH     = 10
 )
 
+type PasswordGenerationRequest struct {
+	length    int
+	uppercase bool
+	lowercase bool
+	numbers   bool
+	symbols   bool
+}
+
+func generatePassword(input PasswordGenerationRequest) (string, error) {
+	length := input.length
+	str := ""
+
+	if length > MAX_LENGTH {
+		return "", errors.New(color.RedString("Length cannot be greater than %d\n", MAX_LENGTH))
+	}
+
+	if length == 0 {
+		length = DEFAULT_LENGTH
+	}
+
+	if input.lowercase {
+		str += LOWER_CASE_LETTERS
+	}
+
+	if input.uppercase {
+		str += UPPER_CASE_LETTERS
+	}
+
+	if input.numbers {
+		str += NUMBERS
+	}
+
+	if input.symbols {
+		str += SPECIAL_CHARACTERS
+	}
+
+	chars := strings.Split(str, "")
+
+	password := ""
+	for i := 0; i < length; i++ {
+		randomIndex := rand.Intn(len(chars))
+		password += chars[randomIndex]
+	}
+
+	if password == "" {
+		return "", errors.New(color.YellowString("Please select at least one option.\n"))
+	}
+
+	return password, nil
+}
+
 func main() {
 
 	app := &cli.App{
@@ -31,7 +84,7 @@ func main() {
 				Name:    "length",
 				Aliases: []string{"l"},
 				Value:   DEFAULT_LENGTH,
-				Usage:   fmt.Sprintf("Length of the password, Max %d", MAX_LENGTH),
+				Usage:   fmt.Sprintf("Length of the password, Max %s", color.YellowString(strconv.Itoa(MAX_LENGTH))),
 			},
 			&cli.BoolFlag{
 				Name:    "uppercase",
@@ -59,48 +112,25 @@ func main() {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			str := ""
 
-			if c.Bool("lowercase") {
-				str += LOWER_CASE_LETTERS
+			input := PasswordGenerationRequest{
+				length:    c.Int("length"),
+				uppercase: c.Bool("uppercase"),
+				lowercase: c.Bool("lowercase"),
+				symbols:   c.Bool("symbols"),
+				numbers:   c.Bool("numbers"),
 			}
 
-			if c.Bool("uppercase") {
-				str += UPPER_CASE_LETTERS
+			password, err := generatePassword(input)
+
+			if err != nil {
+				fmt.Println(err)
 			}
 
-			if c.Bool("numbers") {
-				str += NUMBERS
+			if password != "" {
+				fmt.Println("Your password is:", color.CyanString(password))
 			}
 
-			if c.Bool("symbols") {
-				str += SPECIAL_CHARACTERS
-			}
-
-			chars := strings.Split(str, "")
-			length := c.Int("length")
-
-			if length == 0 {
-				length = DEFAULT_LENGTH
-			}
-
-			if length > MAX_LENGTH {
-				color.Red("Length cannot be greater than %d\n", MAX_LENGTH)
-				return nil
-			}
-
-			password := ""
-			for i := 0; i < length; i++ {
-				randomIndex := rand.Intn(len(chars))
-				password += chars[randomIndex]
-			}
-
-			if password == "" {
-				color.Yellow("Please select at least one option.\n")
-				return nil
-			}
-
-			fmt.Println("Your password is:", color.CyanString(password))
 			return nil
 		},
 	}
