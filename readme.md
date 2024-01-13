@@ -7,7 +7,7 @@ A simple command-line tool for generating random passwords.
 
 ## Prerequisites
 
-- [![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)](https://golang.org/doc/install) 
+[![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)](https://golang.org/doc/install) (version 1.21 or higher)
 
 ## Installation
 
@@ -37,11 +37,8 @@ If you want to install the CLI globally, you can run the following command:
 sudo mv password-generator /usr/local/bin
 ```
 
-## Usage
-To run the CLI, use the following command:
-
 ```sh
-password-generator --length 12 --uppercase --lowercase --numbers --symbols
+password-generator --help
 
 NAME:
    password-generator - Generate a random password
@@ -60,4 +57,13 @@ GLOBAL OPTIONS:
    --symbols       Include special characters (default: false)
    --help, -h      show help
  
+```
+
+## Usage
+To run the CLI, use the following command:
+
+```sh
+password-generator --length 12 --uppercase --lowercase --numbers --symbols
+
+Your password is: SD5a[M8#2lMi
 ```
