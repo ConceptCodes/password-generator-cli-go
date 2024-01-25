@@ -62,7 +62,7 @@ COMMANDS:
 GLOBAL OPTIONS:
    --length value  Length of the password, Max 100 (default: 10)
    --uppercase     Include uppercase letters (default: false)
-   --lowercase     Include lowercase letters (default: false)
+   --lowercase     Include lowercase letters (default: true)
    --numbers       Include numbers (default: false)
    --symbols       Include special characters (default: false)
    --help, -h      show help
